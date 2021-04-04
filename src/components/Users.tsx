@@ -1,6 +1,5 @@
-import { Button, Input, PageHeader, Popconfirm, Table, Typography } from "antd";
-import { resolve } from "node:path";
 import React, { useEffect, useState } from "react";
+import { Button, Input, Popconfirm, Table, Typography } from "antd";
 import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import { ColumnProps } from "antd/lib/table";
 import { FilterConfirmProps, FilterDropdownProps } from "antd/lib/table/interface";
@@ -27,27 +26,6 @@ type User = {
     catchPhrase: string,
     bs: string
   }
-  // id: 1,
-  // name: "Leanne Graham",
-  // username: "Bret",
-  // email: "Sincere@april.biz",
-  // address: {
-  //   "street": "Kulas Light",
-  //   "suite": "Apt. 556",
-  //   "city": "Gwenborough",
-  //   "zipcode": "92998-3874",
-  //   "geo": {
-  //     "lat": "-37.3159",
-  //     "lng": "81.1496"
-  //   }
-  // },
-  // phone: "1-770-736-8031 x56442",
-  // website: "hildegard.org",
-  // company: {
-  //   name: "Romaguera-Crona",
-  //   catchPhrase: "Multi-layered client-server neural-net",
-  //   bs: "harness real-time e-markets"
-  // }
 }
 
 const Users = () => {
@@ -56,45 +34,31 @@ const Users = () => {
 
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/users")
-      .then(response => {
-        return response.json()
-      })
+      .then(response => response.json())
       .then(data => {
-        console.log(data);
+        // console.log(data);
         setTableData(data);
-      })
+      });
   }, []);
+
 
   const columns: ColumnProps<User>[] = [
     {
       title: 'ID',
       dataIndex: 'id',
-      // defaultSortOrder: 'ascend',
       sorter: (a, b) => a.id - b.id,
-      // showSorterTooltip: false
     },
     {
-      // title: 
       dataIndex: '',
       key: 'details',
-      render: (record) => (
-        <Typography.Link href={`/users/${record.id}`} target="_blank">Подробнее</Typography.Link>
-        // <a
-        //   href={`/users/${record.id}`}
-        //   target="_blank"
-        //   rel="noopener noreferrer"
-        // >
-        //   Подробнее
-        // </a>
-      ) // <Link to={`link`} target="_blank">View</Link>
+      render: (record) => <Typography.Link href={`/users/${record.id}`} target="_blank">Подробнее</Typography.Link>
     },
     {
       title: 'Username',
       dataIndex: 'username',
-      // sorter: (a, b) => a.username.length - b.username.length,
       sorter: (a, b) => (a.username).localeCompare(b.username),
       onFilter: (value, record) => {
-        console.log(value, record);
+        // console.log(value, record);
         return record['username'].toString().toLowerCase().includes(value.toString().toLowerCase());
       },
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: {
@@ -111,22 +75,15 @@ const Users = () => {
               setSelectedKeys(e.target.value ? [e.target.value] : []);
               if (e.target.value.length < 1) {
                 clearFilters();
-                // onClearStateValue();
               }
             }}
-            onPressEnter={() => {
-              confirm();
-              // onSetStateValue(filterDropdown.selectedKeys[0]);
-            }}
+            onPressEnter={() => confirm()}
             size="small"
             style={{ width: 188, marginBottom: 8, display: 'block' }}
           />
           <Button
             type="primary"
-            onClick={() => {
-              confirm();
-              // onSetStateValue(filterDropdown.selectedKeys[0]);
-            }}
+            onClick={() => confirm()}
             icon={<SearchOutlined />}
             size="small"
             disabled={selectedKeys.length < 1}
@@ -135,10 +92,7 @@ const Users = () => {
             Найти
 			    </Button>
           <Button
-            onClick={() => {
-              clearFilters();
-              // onClearStateValue();
-            }}
+            onClick={() => clearFilters()}
             size="small"
             disabled={selectedKeys.length < 1}
             style={{ width: 90 }}
@@ -175,39 +129,26 @@ const Users = () => {
     }
   ];
 
+
+
   return (
     <div style={{ padding: 24 }}>
-      {/* <PageHeader title="Пользователи" /> */}
       <Table
         dataSource={tableData}
         columns={columns}
         rowKey="id"
         key="id"
         bordered
-        pagination={{
-          pageSize: 5
-        }}
+        pagination={{ pageSize: 5 }}
         title={() => <Typography.Title>Пользователи</Typography.Title>}
         rowSelection={{
           selectedRowKeys,
-          onChange: (selectedRowKeys, selectedRows) => {
-            console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-          },
-          // getCheckboxProps: record => ({
-          //   // disabled: record.name === 'Disabled User', // Column configuration not to be checked
-          //   // name: record.name,
-          //   disabled: record.id === 
-          // }),
-          // hideDefaultSelections: true
-          onSelect: (record, selected, selectedRows, nativeEvent) => {
-            console.log('onSelect: ', record, selected, selectedRows, nativeEvent);
+          onSelect: (record, selected, selectedRows) => {
+            // console.log('onSelect: ', record, selected, selectedRows);
             if (selected)
               setSelectedRowKeys([...selectedRowKeys, record.id]);
             else
               setSelectedRowKeys([...selectedRowKeys.filter(key => key !== record.id)]);
-            // if (selectedRows.length < 2) {
-            //   record.
-            // }
           },
           getCheckboxProps: record => ({
             disabled: selectedRowKeys.length < 2 && selectedRowKeys[0] === record.id
