@@ -1,8 +1,9 @@
-import { PageHeader, Popconfirm, Table, Typography } from "antd";
+import { Button, Input, PageHeader, Popconfirm, Table, Typography } from "antd";
 import { resolve } from "node:path";
 import React, { useEffect, useState } from "react";
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import { ColumnProps } from "antd/lib/table";
+import { FilterConfirmProps, FilterDropdownProps } from "antd/lib/table/interface";
 
 type User = {
   id: number,
@@ -67,7 +68,10 @@ const Users = () => {
   const columns: ColumnProps<User>[] = [
     {
       title: 'ID',
-      dataIndex: 'id'
+      dataIndex: 'id',
+      // defaultSortOrder: 'ascend',
+      sorter: (a, b) => a.id - b.id,
+      // showSorterTooltip: false
     },
     {
       // title: 
@@ -86,15 +90,74 @@ const Users = () => {
     },
     {
       title: 'Username',
-      dataIndex: 'username'
+      dataIndex: 'username',
+      // sorter: (a, b) => a.username.length - b.username.length,
+      sorter: (a, b) => (a.username).localeCompare(b.username),
+      onFilter: (value, record) => {
+        console.log(value, record);
+        return record['username'].toString().toLowerCase().includes(value.toString().toLowerCase());
+      },
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: {
+        selectedKeys: React.Key[];
+        clearFilters: () => void;
+        setSelectedKeys: (selectedKeys: React.Key[]) => void;
+        confirm: (param?: FilterConfirmProps) => void;
+      }) =>
+        <div style={{ padding: 8 }}>
+          <Input
+            placeholder="Найти"
+            value={selectedKeys[0]}
+            onChange={(e) => {
+              setSelectedKeys(e.target.value ? [e.target.value] : []);
+              if (e.target.value.length < 1) {
+                clearFilters();
+                // onClearStateValue();
+              }
+            }}
+            onPressEnter={() => {
+              confirm();
+              // onSetStateValue(filterDropdown.selectedKeys[0]);
+            }}
+            size="small"
+            style={{ width: 188, marginBottom: 8, display: 'block' }}
+          />
+          <Button
+            type="primary"
+            onClick={() => {
+              confirm();
+              // onSetStateValue(filterDropdown.selectedKeys[0]);
+            }}
+            icon={<SearchOutlined />}
+            size="small"
+            disabled={selectedKeys.length < 1}
+            style={{ width: 90, marginRight: 8 }}
+          >
+            Найти
+			    </Button>
+          <Button
+            onClick={() => {
+              clearFilters();
+              // onClearStateValue();
+            }}
+            size="small"
+            disabled={selectedKeys.length < 1}
+            style={{ width: 90 }}
+          >
+            Очистить
+			  </Button>
+        </div>
+      ,
+      filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     },
     {
       title: 'E-mail',
-      dataIndex: 'email'
+      dataIndex: 'email',
+      sorter: (a, b) => (a.email).localeCompare(b.email)
     },
     {
       title: 'Website',
-      dataIndex: 'website'
+      dataIndex: 'website',
+      sorter: (a, b) => (a.website).localeCompare(b.website)
     },
     {
       title: 'Действия',
